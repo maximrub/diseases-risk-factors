@@ -16,8 +16,8 @@ The trained models and datasets used in this project can be found at [https://hu
 
 ## Repository Structure
 
-- `algorithm/`: Contains the core algorithm for disease risk factor extraction.
-- `graphql-server/`: Backend server using GraphQL.
-- `management-ui/`: Frontend user interface for managing the system.
+- `algorithm`: Contains the core algorithm for disease risk factor extraction.
+- `graphql-server`: Backend server using GraphQL.
+- `management-ui`: Frontend user interface for managing the system.
 - `LICENSE`: License information for the repository.
 - `README.md`: This file.
