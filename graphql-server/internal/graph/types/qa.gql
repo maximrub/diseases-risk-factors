@@ -1,0 +1,17 @@
+type QA {
+    id: ID!
+    disease: Disease!
+    article: Article!
+    questions: [Question!]!
+}
+
+type Question {
+    id: ID!
+    text: String!
+    answers: [Answer!]!
+}
+
+type Answer {
+    answer_start: Int!
+    text: String!
+}

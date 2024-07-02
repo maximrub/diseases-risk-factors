@@ -1,0 +1,23 @@
+extend type Mutation {
+    createQA(input: CreateQAInput!): QAPayload!
+}
+
+input CreateQAInput {
+    diseaseId: String!
+    articleId: String!
+    questions: [QuestionInput!]
+}
+
+input QuestionInput {
+    text: String!
+    answers: [AnswerInput!]
+}
+
+input AnswerInput {
+    answer_start: Int!
+    text: String!
+}
+
+type QAPayload {
+    qa: QA
+}

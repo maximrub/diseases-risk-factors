@@ -1,0 +1,3 @@
+extend type Query{
+    riskFactors(diseaseId: ID!): RiskFactors
+}

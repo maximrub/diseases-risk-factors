@@ -1,0 +1,5 @@
+[tool.ariadne-codegen]
+target_package_path = "thesis_diseases_risk_factors/graph"
+target_package_name = "client"
+queries_path= "thesis_diseases_risk_factors/graph/queries.graphqls"
+schema_path = "thesis_diseases_risk_factors/graph/schema.graphqls"

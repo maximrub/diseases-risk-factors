@@ -1,0 +1,11 @@
+type RiskFactors {
+    id: ID!
+    disease: Disease!
+    riskFactors: [RiskFactor!]!
+}
+
+type RiskFactor {
+    text: String!
+    score: Float!
+    articlesIds: [String!]!
+}

@@ -1,0 +1,18 @@
+extend type Mutation {
+    updateRiskFactors(input: UpdateRiskFactorsInput!): UpdateRiskFactorsPayload!
+}
+
+input UpdateRiskFactorsInput {
+    diseaseId: String!
+    riskFactors: [RiskFactorInput!]!
+}
+
+input RiskFactorInput {
+    text: String!
+    score: Float!
+    articlesIds: [String!]!
+}
+
+type UpdateRiskFactorsPayload {
+    _stub: String!
+}

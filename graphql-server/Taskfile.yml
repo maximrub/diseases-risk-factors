@@ -1,0 +1,110 @@
+version: "3"
+
+env:
+  GOFLAGS: -mod=mod
+  DOCKER_BUILDKIT: 1
+  BUILDKIT_PROGRESS: plain
+
+vars:
+  WORKING_DIR: '{{.WORKING_DIR | default "."}}'
+  GO_BUILD_TARGET: './cmd/main.go'
+  GIT_COMMIT:
+    sh: git log -n 1 --format=%h
+  REGISTRY_NAME: 'thesisdiseasesriskfactorsregistry'
+  IMAGE_NAME: 'diseases-risk-factors-api'
+
+tasks:
+  tidy:
+    desc: Runs go mod tidy for the current service
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - go mod tidy
+
+  build:
+    desc: Compile executable
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - |
+        go build -ldflags="-X main.Version={{.GIT_COMMIT}}" -o diseases-risk-factors {{.GO_BUILD_TARGET}}
+
+  test:
+    desc: Runs go test on the current package
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - go test ./...
+      - echo "Testing {{.WORKING_DIR}} finished successfully"
+
+  generate:
+    desc: Runs go generate on the current package
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - go generate ./...
+      - echo "Testing {{.WORKING_DIR}} finished successfully"
+
+  build-image-amd64:
+    desc: Build AMD64 Dockerfile
+    cmds:
+      - task: build-image
+        vars:
+          PLATFORM: linux/amd64
+
+  build-image-arm64:
+    desc: Build ARM64 Dockerfile
+    cmds:
+      - task: build-image
+        vars:
+          PLATFORM: linux/arm64
+
+  build-image:
+    internal: true
+    desc: Build Dockerfile
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - |
+        docker build --platform={{.PLATFORM}} -t {{.IMAGE_NAME}}:{{.GIT_COMMIT}} --build-arg VERSION={{.GIT_COMMIT}} .
+
+  push-image-amd64:
+    desc: Build AMD64 Dockerfile
+    cmds:
+      - task: build-image-amd64
+      - task: push-image
+
+  push-image-arm64:
+    desc: Build ARM64 Dockerfile
+    cmds:
+      - task: build-image-arm64
+      - task: push-image
+
+  push-image:
+    internal: true
+    desc: Push image to ACR
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - |
+        az acr login -n {{.REGISTRY_NAME}}
+        docker tag {{.IMAGE_NAME}}:{{.GIT_COMMIT}} {{.REGISTRY_NAME}}.azurecr.io/{{.IMAGE_NAME}}:{{.GIT_COMMIT}}
+        docker push {{.REGISTRY_NAME}}.azurecr.io/{{.IMAGE_NAME}}:{{.GIT_COMMIT}}
+
+  deploy:
+    desc: Deploy to ACK
+    dir: ./charts
+    cmds:
+      - task: push-image-amd64
+      - |
+        CLIENT_ID=$(az aks show -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --query addonProfiles.azureKeyvaultSecretsProvider.identity.clientId -o tsv)
+        AZURE_TENANT_ID=$(az account show --query tenantId -o tsv)
+        helm upgrade --install \
+          --set image.repository={{.REGISTRY_NAME}}.azurecr.io/{{.IMAGE_NAME}} \
+          --set image.tag={{.GIT_COMMIT}} \
+          --set keyVault.name=$KEY_VAULT_NAME \
+          --set keyVault.identityId=$CLIENT_ID \
+          --set keyVault.tenantId=$AZURE_TENANT_ID \
+          --set storage.name=$STORAGE_ACCOUNT_NAME \
+          diseases-risk-factors thesis-diseases-risk-factors
+
+  uninstall:
+    desc: Remove from ACK
+    dir: ./charts
+    cmds:
+      - |
+        helm uninstall diseases-risk-factors

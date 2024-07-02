@@ -1,0 +1,109 @@
+version: "3"
+
+env:
+  AUTH0_CLIENT_ID: '{{.AUTH0_CLIENT_ID}}'
+  AUTH0_CLIENT_SECRET: '{{.AUTH0_CLIENT_SECRET}}'
+
+vars:
+  WORKING_DIR: '{{.WORKING_DIR | default "."}}'
+  GIT_COMMIT:
+    sh: git log -n 1 --format=%h
+  VENV: 'venv'
+
+tasks:
+  generate:
+    desc: Generates the GraphQL client
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - rm -rf thesis_diseases_risk_factors/graph/client
+      - ariadne-codegen
+  
+  test:
+    desc: Run tests
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - pytest -ra
+  
+  coverage:
+    desc: Run tests with coverage
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - coverage erase
+      - coverage run --include=podsearch/* -m pytest -ra
+      - coverage report -m
+  
+  build-gpu:
+    desc: Build GPU
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - |
+        pip3 install -r requirements.txt
+        pip3 install -r requirements-gpu.txt
+  
+  build-conda:
+    desc: Build GPU
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - |
+        conda install cudatoolkit cudnn
+        conda install aiohttp pytest aiofiles aiohttp-retry jsons scikit-learn transformers datasets
+        conda install -c conda-forge tenacity
+        conda install -c conda-forge evaluate pydantic sentencepiece accelerate
+        conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+        conda install pip
+        pip3 install dependency-injector
+        pip3 install ariadne-codegen
+  
+  build-cpu:
+    desc: Build CPU
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - |
+        python3.10 -m venv {{.VENV}}
+        ./{{.VENV}}/bin/pip3.10 install -r requirements.txt
+        ./{{.VENV}}/bin/pip3.10 install -r requirements-cpu.txt
+  
+  run-cpu:
+    desc: Run CPU
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - AUTH0_CLIENT_ID="{{.AUTH0_CLIENT_ID}}" AUTH0_CLIENT_SECRET="{{.AUTH0_CLIENT_SECRET}}" ./{{.VENV}}/bin/python3.10 -m thesis_diseases_risk_factors
+  
+  run-gpu:
+    desc: Run GPU
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - AUTH0_CLIENT_ID="{{.AUTH0_CLIENT_ID}}" AUTH0_CLIENT_SECRET="{{.AUTH0_CLIENT_SECRET}}" python3.10 -m thesis_diseases_risk_factors
+      
+  run-conda:
+    desc: Run Conda
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - |
+        conda activate maxim
+        AUTH0_CLIENT_ID="{{.AUTH0_CLIENT_ID}}" AUTH0_CLIENT_SECRET="{{.AUTH0_CLIENT_SECRET}}" python3.10 -m thesis_diseases_risk_factors
+  
+  clean:
+    internal: true
+    desc: Clean
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - find . -type f -name '*.pyc' -delete
+      - |
+        rm -rf trained_models
+        rm -rf results_binary
+        rm -rf results_qa
+        rm -rf trained_models_bin
+      
+  clean-cpu:
+    desc: Clean CPU
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - rm -rf {{.VENV}}
+      - task: clean
+      
+  clean-gpu:
+    desc: Clean GPU
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - task: clean

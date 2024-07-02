@@ -1,0 +1,5 @@
+type ClassificationItem {
+    id: ID!
+    label: Int!
+    article: Article!
+}

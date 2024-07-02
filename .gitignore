@@ -1,6 +1,117 @@
-# If you prefer the allow list template instead of the deny list, see community template:
-# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
-#
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+
+# Cache and temporary files
+cache_dir/
+outputs/
+runs/
+algorithm/diseases_risk_factors/models/classification/
+algorithm/diseases_risk_factors/models/question_answering/
+algorithm/diseases_risk_factors/temp/
+**/.DS_Store
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -16,6 +127,32 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+graphql-server/internal/graph/schema.graphqls
+graphql-server/internal/generated/
+graphql-server/internal/graph/model/models_gen.go
+diseases-risk-factors/
 
-# Go workspace file
-go.work
+# Node.js / Typescript
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+management-ui/node_modules
+management-ui/.pnp
+management-ui/.pnp.js
+
+# testing
+management-ui/coverage
+
+# production
+management-ui/build
+
+# misc
+management-ui/.DS_Store
+management-ui/.env.local
+management-ui/.env.development.local
+management-ui/.env.test.local
+management-ui/.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

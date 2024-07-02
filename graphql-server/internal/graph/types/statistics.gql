@@ -1,0 +1,10 @@
+type Statistics {
+    diseaseCount: Int!
+    articlesCount: Int!
+    qasCount: Int!
+    positiveClassificationItemsCount: Int!
+    totalPositiveClassificationItemsCount: Int!
+    negativeClassificationItemsCount: Int!
+    qasShortestAnswerLength: Int!
+    qasLongestAnswerLength: Int!
+}

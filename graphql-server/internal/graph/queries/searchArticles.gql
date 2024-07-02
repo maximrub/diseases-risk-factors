@@ -1,0 +1,3 @@
+extend type Query{
+    searchArticles(term: String!, limit: Int!): [ID!]
+}

@@ -1,0 +1,4 @@
+{
+  "includes": [ "**/*.gql" ],
+  "excludes": [ "schema.graphql" ]
+}

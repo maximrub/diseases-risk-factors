@@ -1,0 +1,13 @@
+type Disease {
+    id: ID!
+    names: [String!]!
+    dbLinks: DiseaseDBLinks!
+    category: String!
+    description: String!
+}
+
+type DiseaseDBLinks {
+    icd10: [String!]
+    icd11: [String!]
+    mesh: [String!]
+}

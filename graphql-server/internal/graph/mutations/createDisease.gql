@@ -1,0 +1,20 @@
+extend type Mutation {
+    createDisease(input: CreateDiseaseInput!): DiseasePayload!
+}
+
+input CreateDiseaseInput {
+    names: [String!]!
+    dbLinks: DiseaseDBLinksInput!
+    category: String!
+    description: String!
+}
+
+input DiseaseDBLinksInput {
+    icd10: [String!]
+    icd11: [String!]
+    mesh: [String!]
+}
+
+type DiseasePayload {
+    disease: Disease
+}

@@ -1,0 +1,68 @@
+version: "3"
+
+env:
+  DOCKER_BUILDKIT: 1
+  BUILDKIT_PROGRESS: plain
+
+vars:
+  WORKING_DIR: '{{.WORKING_DIR | default "."}}'
+  GIT_COMMIT:
+    sh: git log -n 1 --format=%h
+  REGISTRY_NAME: 'thesisdiseasesriskfactorsregistry'
+  IMAGE_NAME: 'diseases-risk-factors-management'
+
+tasks:
+  build-image-amd64:
+    desc: Build AMD64 Dockerfile
+    cmds:
+      - task: build-image
+        vars:
+          PLATFORM: linux/amd64
+
+  build-image-arm64:
+    desc: Build ARM64 Dockerfile
+    cmds:
+      - task: build-image
+        vars:
+          PLATFORM: linux/arm64
+
+  build-image:
+    internal: true
+    desc: Build Dockerfile
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - |
+        docker build --platform={{.PLATFORM}} -t {{.IMAGE_NAME}}:{{.GIT_COMMIT}} .
+
+  push-image-amd64:
+    desc: Build AMD64 Dockerfile
+    cmds:
+      - task: build-image-amd64
+      - task: push-image
+
+  push-image-arm64:
+    desc: Build ARM64 Dockerfile
+    cmds:
+      - task: build-image-arm64
+      - task: push-image
+
+  push-image:
+    internal: true
+    desc: Push image to ACR
+    dir: "{{.WORKING_DIR}}"
+    cmds:
+      - |
+        az acr login -n {{.REGISTRY_NAME}}
+        docker tag {{.IMAGE_NAME}}:{{.GIT_COMMIT}} {{.REGISTRY_NAME}}.azurecr.io/{{.IMAGE_NAME}}:{{.GIT_COMMIT}}
+        docker push {{.REGISTRY_NAME}}.azurecr.io/{{.IMAGE_NAME}}:{{.GIT_COMMIT}}
+
+  deploy:
+    desc: Deploy to ACK
+    dir: ./charts
+    cmds:
+      - task: push-image-amd64
+      - |
+        helm upgrade --install \
+          --set image.repository={{.REGISTRY_NAME}}.azurecr.io/{{.IMAGE_NAME}} \
+          --set image.tag={{.GIT_COMMIT}} \
+          diseases-risk-factors-management thesis-diseases-risk-factors-management
