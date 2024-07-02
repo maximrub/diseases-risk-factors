@@ -1,0 +1,12 @@
+extend type Mutation {
+    createClassificationItems(input: [CreateClassificationItemInput!]): ClassificationItemPayload!
+}
+
+input CreateClassificationItemInput {
+    articleId: String!
+    label: Int!
+}
+
+type ClassificationItemPayload {
+    classificationItems: [ClassificationItem!]
+}

@@ -1,0 +1,71 @@
+query ListDiseases {
+    diseases {
+        id
+        names
+        dbLinks {
+            icd10
+            icd11
+            mesh
+        }
+        category
+        description
+  }
+}
+
+query ListClassificationItems {
+    classificationItems {
+        id
+        label
+        article {
+            id
+            text
+        }
+  }
+}
+
+query ListQuestionsAnswersByDisease($diseaseId: ID!) {
+    qas(diseaseId: $diseaseId) {
+        id
+        article {
+            id
+            text
+        }
+        questions {
+            id
+            text
+            answers {
+                answer_start
+                text
+            }
+        }
+    }
+}
+
+query SearchArticles($term: String!, $limit: Int!) {
+    searchArticles(term: $term, limit: $limit)
+}
+
+mutation UpdateRiskFactors($diseaseId: String!, $riskFactors: [RiskFactorInput!]!) {
+  updateRiskFactors(input: { diseaseId: $diseaseId, riskFactors: $riskFactors }) {
+    _stub
+  }
+}
+
+query Article($id: ID!) {
+    article(id: $id){
+    text
+  }
+}
+
+query Statistics{
+  statistics{
+    diseaseCount
+    articlesCount
+    qasCount
+    positiveClassificationItemsCount
+    totalPositiveClassificationItemsCount
+    negativeClassificationItemsCount
+    qasShortestAnswerLength
+    qasLongestAnswerLength
+  }
+}

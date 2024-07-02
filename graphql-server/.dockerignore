@@ -1,0 +1,7 @@
+.git
+.idea
+/internal/graph/schema.graphqls
+/internal/generated/
+/internal/graph/model/models_gen.go
+/diseases-risk-factors
+/Taskfile.yml

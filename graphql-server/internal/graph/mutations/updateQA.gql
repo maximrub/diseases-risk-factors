@@ -1,0 +1,26 @@
+extend type Mutation {
+    updateQA(input: UpdateQAInput!): UpdateQAPayload!
+}
+
+input UpdateQAInput {
+    qaId: ID!
+    patch: UpdateQAPatch!
+}
+
+input UpdateQAPatch {
+    questions: [UpdateQuestionInput!]
+}
+
+input UpdateQuestionInput {
+    text: String!
+    answers: [UpdateAnswerInput!]
+}
+
+input UpdateAnswerInput {
+    answer_start: Int!
+    text: String!
+}
+
+type UpdateQAPayload {
+    qa: QA
+}

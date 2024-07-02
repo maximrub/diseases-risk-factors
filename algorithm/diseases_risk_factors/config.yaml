@@ -1,0 +1,31 @@
+models:
+  rootTrainedSavePath: "trained_models"
+  rootTrainedBinPath: "trained_models_bin"
+  binaryClassificationTrainedSavePath: "trained_models/binary_classification"
+  questionAnsweringTrainedSavePath: "trained_models/question_answering"
+resources:
+  httpClient:
+    forceClose: false
+  graph:
+    server:
+      url: https://diseases-risk-factors.westeurope.cloudapp.azure.com/query
+    auth0:
+      url: https://dev-a0h3umva1du6qc5v.us.auth0.com/oauth/token
+      clientID: ${AUTH0_CLIENT_ID}
+      clientSecret: ${AUTH0_CLIENT_SECRET}
+      grantType: client_credentials
+  logging:
+    version: 1
+    disable_existing_loggers: true
+    formatters:
+      formatter:
+        format: "[%(asctime)s] [%(levelname)s] [%(name)s]: %(message)s"
+    handlers:
+      console:
+        class: "logging.StreamHandler"
+        level: "INFO"
+        formatter: "formatter"
+        stream: "ext://sys.stdout"
+    root:
+      level: "INFO"
+      handlers: ["console"]

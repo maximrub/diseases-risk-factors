@@ -1,0 +1,93 @@
+schema {
+ query: Query
+ mutation: Mutation
+}
+
+type Query {
+ article(id: ID!): Article!
+ classificationItems: [ClassificationItem!]!
+ diseases: [Disease!]!
+ qas(diseaseId: ID!): [QA!]
+ searchArticles(term: String!, limit: Int!): [ID!]
+ riskFactors(diseaseId: ID!): RiskFactors!
+ statistics: Statistics!
+}
+
+type Mutation {
+ updateRiskFactors(input: UpdateRiskFactorsInput!): UpdateRiskFactorsPayload!
+}
+
+input UpdateRiskFactorsInput {
+    diseaseId: String!
+    riskFactors: [RiskFactorInput!]!
+}
+
+input RiskFactorInput {
+    text: String!
+    score: Float!
+    articlesIds: [String!]!
+}
+
+type UpdateRiskFactorsPayload {
+    _stub: String!
+}
+
+type Article {
+ id: ID!
+ text: String!
+}
+
+type ClassificationItem {
+ id: ID!
+ label: Int!
+ article: Article!
+}
+
+type Disease {
+ id: ID!
+ names: [String!]!
+ dbLinks: DiseaseDBLinks!
+ category: String!
+ description: String!
+}
+
+type DiseaseDBLinks {
+ icd10: [String!]
+ icd11: [String!]
+ mesh: [String!]
+}
+
+type QA {
+ id: ID!
+ disease: Disease!
+ article: Article!
+ questions: [Question!]!
+}
+
+type Question {
+ id: ID!
+ text: String!
+ answers: [Answer!]!
+}
+
+type Answer {
+ answer_start: Int!
+ text: String!
+}
+
+type Statistics {
+ diseaseCount: Int!
+ articlesCount: Int!
+ qasCount: Int!
+ positiveClassificationItemsCount: Int!
+ totalPositiveClassificationItemsCount: Int!
+ negativeClassificationItemsCount: Int!
+ qasShortestAnswerLength: Int!
+ qasLongestAnswerLength: Int!
+}
+
+type RiskFactors {
+    id: ID!
+    disease: Disease!
+    riskFactors: [String!]!
+}

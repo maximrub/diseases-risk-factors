@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "thesis-diseases-risk-factors.fullname" . }}
+  labels:
+    {{- include "thesis-diseases-risk-factors.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "thesis-diseases-risk-factors.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "thesis-diseases-risk-factors.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "thesis-diseases-risk-factors.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: secrets-vol
+            mountPath: "/mnt/secrets"
+          env:
+          - name: ENTREZ_EMAIL
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "thesis-diseases-risk-factors.fullname" . }}
+                key: entrez-email
+          - name: DB_CONNECTION_URI
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "thesis-diseases-risk-factors.fullname" . }}
+                key: db-connection-uri
+          - name: DATABASE_NAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "thesis-diseases-risk-factors.fullname" . }}
+                key: database-name
+          - name: REDIS_HOST
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "thesis-diseases-risk-factors.fullname" . }}
+                key: redis-host
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "thesis-diseases-risk-factors.fullname" . }}
+                key: redis-password
+          - name: AUTH0_DOMAIN
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "thesis-diseases-risk-factors.fullname" . }}
+                key: auth0-domain
+          - name: AUTH0_AUDIENCE
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "thesis-diseases-risk-factors.fullname" . }}
+                key: auth0-audience
+          - name: AUTH0_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "thesis-diseases-risk-factors.fullname" . }}
+                key: auth0-client-secret
+          - name: STORAGE_ACCOUNT_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "thesis-diseases-risk-factors.fullname" . }}
+                key: storage-account-key
+          - name: STORAGE_ACCOUNT_NAME
+            value: {{ .Values.storage.name }}
+          - name: SOURCE_CONTAINER_NAME
+            value: {{ .Values.storage.sourceContainer }}
+          - name: SOURCE_MODEL_NAME
+            value: {{ .Values.storage.sourceModelName }}
+          - name: TRAINED_CONTAINER_NAME
+            value: {{ .Values.storage.trainedContainer }}
+          - name: TRAINED_MODEL_NAME
+            value: {{ .Values.storage.trainedModelName }}
+          - name: SAMPLE_CONTAINER_NAME
+            value: {{ .Values.storage.sampleContainer }}
+          - name: SAMPLE_FILE_NAME
+            value: {{ .Values.storage.sampleFileName }}
+      volumes:
+      - name: secrets-vol
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: {{ include "thesis-diseases-risk-factors.fullname" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

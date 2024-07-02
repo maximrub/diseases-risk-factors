@@ -1,0 +1,16 @@
+ariadne-codegen
+pytest
+dependency-injector[yaml]
+aiohttp[speedups]
+aiofiles
+aiohttp-retry
+jsons
+scikit-learn
+transformers
+datasets
+evaluate
+pydantic
+sentencepiece
+accelerate
+pandas
+tenacity

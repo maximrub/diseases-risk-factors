@@ -1,0 +1,8 @@
+.git
+.idea
+.vscode
+/Taskfile.yml
+/node_modules
+/build
+*.md
+.gitignore

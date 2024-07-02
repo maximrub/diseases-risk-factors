@@ -1,0 +1,11 @@
+extend type Mutation {
+    deleteQA(input: DeleteQAInput!): DeleteQAPayload!
+}
+
+input DeleteQAInput {
+    id: ID!
+}
+
+type DeleteQAPayload {
+    _stub: String!
+}
