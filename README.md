@@ -1,6 +1,7 @@
 # Automatic Extraction of Disease Risk Factors from Medical Publications
 
 This repository contains the implementation of our novel approach to automating the identification of disease risk factors from medical literature. Leveraging advances in machine learning and natural language processing, and specifically utilizing pre-trained models in the biomedical domain, this project aims to develop a comprehensive pipeline for extracting risk factors from a vast array of medical articles.
+Please refer to our paper [Automatic Extraction of Disease Risk Factors from Medical Publications](https://arxiv.org/pdf/2407.07373) for more details. 
 
 ## Overview
 
